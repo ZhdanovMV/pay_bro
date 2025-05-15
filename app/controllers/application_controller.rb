@@ -9,7 +9,7 @@ class ApplicationController < ActionController::API
     header = request.headers["Authorization"]
     token = header.split(" ").last if header
     decoded = decode_jwt(token)
-    @current_user = User.find(decoded[:user_id]) if decoded
+    @current_user = User.find(decoded[:user_id])
   rescue
     render json: { error: "Unauthorized" }, status: :unauthorized
   end
