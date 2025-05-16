@@ -29,7 +29,7 @@ class WithdrawMoneyService
   private
 
   def success_response(account)
-    { success: true, message: "Withdrawal successful", balance: account.balance }
+    { success: true, message: "Withdrawal successful", balance: account.balance.amount }
   end
 
   def failure(error)

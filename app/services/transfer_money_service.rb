@@ -38,7 +38,7 @@ class TransferMoneyService
   end
 
   def success_response(account)
-    { success: true, message: "Transfer successful", balance: account.balance }
+    { success: true, message: "Transfer successful", balance: account.balance.amount }
   end
 
   def failure(error)
