@@ -37,6 +37,25 @@ RSpec.describe AccountsController, type: :controller do
       expect(response).to have_http_status(:ok)
       expect(parsed_response['balance'].to_money).to eq(account.reload.balance)
     end
+
+    context 'when the amount is 0 or less' do
+      let(:amount) { 0 }
+
+      it 'does not update the account balance' do
+        initial_balance = account.balance
+        post :withdraw, params: { amount: amount }
+
+        expect(account.reload.balance).to eq(initial_balance)
+      end
+
+      it 'returns a bad request status with an error message' do
+        post :withdraw, params: { amount: amount }
+        parsed_response = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:bad_request)
+        expect(parsed_response['error']).to eq('Invalid amount')
+      end
+    end
   end
 
   describe 'POST #withdraw' do

@@ -4,14 +4,13 @@ class AccountsController < ApplicationController
   end
 
   def deposit
-    deposit_money = params[:amount].to_money
-    account = current_user.account
+    result = DepositMoneyService.new(user: current_user, amount: params[:amount]).call
 
-    account.with_lock do
-      account.update!(balance: account.balance + deposit_money)
+    if result[:success]
+      render json: result.slice(:message, :balance)
+    else
+      render json: { error: result[:error] }, status: infer_status(result[:error])
     end
-
-    render json: { balance: account.balance.amount }
   end
 
   def withdraw
