@@ -1,24 +1,72 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A small financial API application using Ruby on Rails and Postgres.
 
-Things you may want to cover:
+Ruby version: 3.4
 
-* Ruby version
+Rails version: 8.0.2
 
-* System dependencies
+## Setup
+To prepare this app to be launched, run the following commands after cloning the repo:
+```bash
+bundle install
+bin/rails db:create
+bin/rails db:migrate
+```
 
-* Configuration
+To start the Rails server, run:
+```bash
+bin/rails server
+```
+The application will be accessible at `http://localhost:3000`.
 
-* Database creation
+To run tests, execute:
+```bash
+bin/rspec
+```
 
-* Database initialization
+## Examples of CURL queries
+### Signup
+```bash
+curl -X POST http://localhost:3000/signup -H "Content-Type: application/json" \
+-d '{"email":"user1@example.com", "password":"pass123"}'
+```
 
-* How to run the test suite
+### Login
+```bash
+curl -X POST http://localhost:3000/login -H "Content-Type: application/json" \
+-d '{"email":"user1@example.com", "password":"pass123"}'
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+### Check balance
+Requires JWT token from login query response
+```bash
+curl -H "Authorization: Bearer <JWT>" http://localhost:3000/accounts/balance
+```
 
-* Deployment instructions
+### Deposit
+Requires JWT token from login query response
+```bash
+curl -X POST http://localhost:3000/accounts/deposit \
+-H "Authorization: Bearer <JWT>" \
+-H "Content-Type: application/json" \
+-d '{"amount": 100}'
+```
 
-* ...
+### Withdraw
+Requires JWT token from login query response
+```bash
+curl -X POST http://localhost:3000/accounts/withdraw \
+-H "Authorization: Bearer <JWT>" \
+-H "Content-Type: application/json" \
+-d '{"amount": 50}'
+```
+
+### Transfer
+Requires JWT token from login query response
+```bash
+curl -X POST http://localhost:3000/accounts/transfer \
+-H "Authorization: Bearer <JWT>" \
+-H "Content-Type: application/json" \
+-d '{"recipient_email": "user2@example.com", "amount": 25}'
+```

@@ -57,7 +57,7 @@ RSpec.describe AuthController, type: :controller do
 
   describe 'POST #login' do
     context 'with valid credentials' do
-      let(:user) { User.create(email: 'test@example.com', password: 'password123') }
+      let(:user) { create(:user) }
 
       let(:valid_params) do
         {
