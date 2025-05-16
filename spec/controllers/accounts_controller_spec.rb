@@ -4,6 +4,7 @@ RSpec.describe AccountsController, type: :controller do
   include JwtHandler
 
   let(:user) { create(:user) }
+  let(:account) { user.account }
   let(:token) { encode_jwt({ user_id: user.id }) }
 
   before do
@@ -15,7 +16,87 @@ RSpec.describe AccountsController, type: :controller do
       get :balance
       expect(response).to have_http_status(:ok)
       parsed_response = JSON.parse(response.body)
-      expect(parsed_response['balance'].to_d).to eq(user.account.balance.amount)
+      expect(parsed_response['balance'].to_money).to eq(account.balance)
+    end
+  end
+
+  describe 'POST #deposit' do
+    let(:amount) { 100 }
+
+    it 'increases the user account balance by the specified amount' do
+      initial_balance = account.balance
+      post :deposit, params: { amount: amount }
+
+      expect(account.reload.balance).to eq(initial_balance + amount.to_money)
+    end
+
+    it 'returns the updated balance in the response' do
+      post :deposit, params: { amount: amount }
+      parsed_response = JSON.parse(response.body)
+
+      expect(response).to have_http_status(:ok)
+      expect(parsed_response['balance'].to_money).to eq(account.reload.balance)
+    end
+  end
+
+  describe 'POST #withdraw' do
+    let(:amount) { 50 }
+
+    context 'when the account has sufficient balance' do
+      before { account.update!(balance: account.balance + 100.to_money) }
+
+      it 'reduces the user account balance by the specified amount' do
+        initial_balance = account.balance
+        post :withdraw, params: { amount: amount }
+
+        expect(account.reload.balance).to eq(initial_balance - amount.to_money)
+      end
+
+      it 'returns the updated balance in the response' do
+        post :withdraw, params: { amount: amount }
+        parsed_response = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:ok)
+        expect(parsed_response['balance'].to_money).to eq(user.account.reload.balance)
+      end
+    end
+
+    context 'when the account has insufficient balance' do
+      let(:amount) { account.balance.amount + 100 }
+
+      it 'does not update the account balance' do
+        initial_balance = account.balance
+        post :withdraw, params: { amount: amount }
+
+        expect(account.reload.balance).to eq(initial_balance)
+      end
+
+      it 'returns an error message in the response' do
+        post :withdraw, params: { amount: amount }
+        parsed_response = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(parsed_response['error']).to eq('Insufficient balance')
+      end
+    end
+
+    context 'when the amount is 0 or less' do
+      let(:amount) { 0 }
+
+      it 'does not update the account balance' do
+        initial_balance = account.balance
+        post :withdraw, params: { amount: amount }
+
+        expect(account.reload.balance).to eq(initial_balance)
+      end
+
+      it 'returns a bad request status with an error message' do
+        post :withdraw, params: { amount: amount }
+        parsed_response = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:bad_request)
+        expect(parsed_response['error']).to eq('Invalid amount')
+      end
     end
   end
 end
