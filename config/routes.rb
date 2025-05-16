@@ -10,4 +10,11 @@ Rails.application.routes.draw do
 
   post "/signup", to: "auth#signup"
   post "/login", to: "auth#login"
+
+  namespace :accounts do
+    get :balance
+    post :deposit
+    post :withdraw
+    post :transfer
+  end
 end

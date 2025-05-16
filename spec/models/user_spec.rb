@@ -21,4 +21,12 @@ RSpec.describe User, type: :model do
       expect(user2.errors[:email]).to include("has already been taken")
     end
   end
+
+  describe "callbacks" do
+    it "creates an account after user creation" do
+      user = User.create(email: "test@example.com", password: "password123")
+      expect(user.account).not_to be_nil
+      expect(user.account.balance_in_cents).to eq(0)
+    end
+  end
 end
