@@ -36,32 +36,31 @@ class AccountsController < ApplicationController
   end
 
   def transfer
-    transfer_money = params[:amount].to_money
-    return render json: { error: "Invalid amount" }, status: :bad_request if transfer_money.amount <= 0
+    result = TransferMoneyService.new(
+      from_user: current_user,
+      recipient_email: params[:recipient_email],
+      amount: params[:amount]
+    ).call
 
-    recipient = User.find_by(email: params[:recipient_email])
-    return render json: { error: "Recipient not found" }, status: :not_found unless recipient
-
-    from_account = current_user.account
-    to_account = recipient.account
-
-    accounts = [ from_account, to_account ].sort_by(&:id)
-    success = false
-
-    ActiveRecord::Base.transaction do
-      accounts.each { |account| account.lock! }
-
-      if from_account.balance >= transfer_money
-        from_account.update!(balance: from_account.balance - transfer_money)
-        to_account.update!(balance: to_account.balance + transfer_money)
-        success = true
-      end
-    end
-
-    if success
-      render json: { message: "Transfer successful", balance: from_account.balance.amount }
+    if result[:success]
+      render json: result.slice(:message, :balance)
     else
-      render json: { error: "Insufficient balance" }, status: :unprocessable_entity
+      render json: { error: result[:error] }, status: infer_status(result[:error])
+    end
+  end
+
+  private
+
+  def infer_status(error)
+    case error
+    when "Invalid amount"
+      :bad_request
+    when "Recipient not found"
+      :not_found
+    when "Insufficient balance"
+      :unprocessable_entity
+    else
+      :internal_server_error
     end
   end
 end
