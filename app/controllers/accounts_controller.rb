@@ -15,23 +15,12 @@ class AccountsController < ApplicationController
   end
 
   def withdraw
-    withdrawal_money = params[:amount].to_money
-    return render json: { error: "Invalid amount" }, status: :bad_request if withdrawal_money.amount <= 0
+    result = WithdrawMoneyService.new(user: current_user, amount: params[:amount]).call
 
-    account = current_user.account
-    success = false
-
-    account.with_lock do
-      if account.balance >= withdrawal_money
-        account.update!(balance: account.balance - withdrawal_money)
-        success = true
-      end
-    end
-
-    if success
-      render json: { balance: account.balance.amount }
+    if result[:success]
+      render json: result.slice(:message, :balance)
     else
-      render json: { error: "Insufficient balance" }, status: :unprocessable_entity
+      render json: { error: result[:error] }, status: infer_status(result[:error])
     end
   end
 
