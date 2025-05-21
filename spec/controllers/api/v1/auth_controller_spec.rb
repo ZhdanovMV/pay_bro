@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe AuthController, type: :controller do
+RSpec.describe Api::V1::AuthController, type: :controller do
   describe 'POST #signup' do
     context 'with valid params' do
       let(:valid_params) do
@@ -14,6 +14,12 @@ RSpec.describe AuthController, type: :controller do
         expect {
           post :signup, params: valid_params
         }.to change(User, :count).by(1)
+      end
+
+      it 'creates a new account' do
+        expect {
+          post :signup, params: valid_params
+        }.to change(Account, :count).by(1)
       end
 
       it 'returns a success response' do
@@ -40,6 +46,12 @@ RSpec.describe AuthController, type: :controller do
         expect {
           post :signup, params: invalid_params
         }.to_not change(User, :count)
+      end
+
+      it 'does not create a new account' do
+        expect {
+          post :signup, params: invalid_params
+        }.to_not change(Account, :count)
       end
 
       it 'returns an unprocessable entity status' do

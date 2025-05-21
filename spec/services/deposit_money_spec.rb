@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe DepositMoneyService do
+RSpec.describe DepositMoney do
   let(:user) { create(:user) }
   let(:account) { user.account }
   let(:amount) { 100.to_money }
@@ -11,7 +11,7 @@ RSpec.describe DepositMoneyService do
     context "when the deposit is successful" do
       it "increases the account balance by the deposit amount" do
         initial_balance = account.balance
-        expect(service.call[:success]).to be_truthy
+        expect(service.call[:success]).to be true
         expect(account.reload.balance).to eq(initial_balance + amount)
       end
     end
@@ -21,7 +21,7 @@ RSpec.describe DepositMoneyService do
 
       it "fails with an invalid deposit amount error" do
         result = service.call
-        expect(result[:success]).to be_falsey
+        expect(result[:success]).to be false
         expect(result[:error]).to eq("Invalid amount")
         expect(account.reload.balance).to eq(account.balance)
       end

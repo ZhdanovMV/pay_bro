@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe WithdrawMoneyService do
+RSpec.describe WithdrawMoney do
   let(:user) { create(:user) }
   let(:account) { user.account }
   let(:amount) { 50.to_money }
@@ -14,7 +14,7 @@ RSpec.describe WithdrawMoneyService do
   describe "#call" do
     context "when the withdrawal is successful" do
       it "reduces the account balance by the specified amount" do
-        expect(service.call[:success]).to be_truthy
+        expect(service.call[:success]).to be true
         expect(account.reload.balance).to eq(50.to_money)
       end
     end
@@ -24,7 +24,7 @@ RSpec.describe WithdrawMoneyService do
 
       it "does not update the account balance and sets an error" do
         result = service.call
-        expect(result[:success]).to be_falsey
+        expect(result[:success]).to be false
         expect(result[:error]).to eq("Insufficient balance")
         expect(account.reload.balance).to eq(100.to_money)
       end
@@ -35,7 +35,7 @@ RSpec.describe WithdrawMoneyService do
 
       it "fails with an invalid amount error" do
         result = service.call
-        expect(result[:success]).to be_falsey
+        expect(result[:success]).to be false
         expect(result[:error]).to eq("Invalid amount")
       end
     end

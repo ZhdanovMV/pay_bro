@@ -1,6 +1,4 @@
-class TransferMoneyService
-  attr_reader :from_user, :recipient_email, :amount, :success
-
+class TransferMoney
   def initialize(from_user:, recipient_email:, amount:)
     @from_user = from_user
     @recipient_email = recipient_email
@@ -24,6 +22,8 @@ class TransferMoneyService
   end
 
   private
+
+  attr_reader :from_user, :recipient_email, :amount, :success
 
   def transfer_money(from_account:, to_account:)
     ActiveRecord::Base.transaction do

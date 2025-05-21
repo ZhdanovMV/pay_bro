@@ -1,6 +1,4 @@
-class DepositMoneyService
-  attr_reader :user, :amount
-
+class DepositMoney
   def initialize(user:, amount:)
     @user = user
     @amount = amount.to_money
@@ -19,6 +17,8 @@ class DepositMoneyService
   end
 
   private
+
+  attr_reader :user, :amount
 
   def success_response(account)
     { success: true, message: "Deposit successful", balance: account.balance.amount }
