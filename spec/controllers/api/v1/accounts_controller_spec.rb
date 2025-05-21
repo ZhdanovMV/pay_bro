@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe AccountsController, type: :controller do
+RSpec.describe Api::V1::AccountsController, type: :controller do
   include JwtHandler
 
   let(:user) { create(:user) }

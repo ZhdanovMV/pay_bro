@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe AuthController, type: :controller do
+RSpec.describe Api::V1::AuthController, type: :controller do
   describe 'POST #signup' do
     context 'with valid params' do
       let(:valid_params) do

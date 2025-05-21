@@ -8,13 +8,17 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
 
-  post "/signup", to: "auth#signup"
-  post "/login", to: "auth#login"
+  namespace :api do
+    namespace :v1 do
+      post "/signup", to: "auth#signup"
+      post "/login", to: "auth#login"
 
-  namespace :accounts do
-    get :balance
-    post :deposit
-    post :withdraw
-    post :transfer
+      namespace :accounts do
+        get :balance
+        post :deposit
+        post :withdraw
+        post :transfer
+      end
+    end
   end
 end
