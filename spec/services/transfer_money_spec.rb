@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe TransferMoneyService do
+RSpec.describe TransferMoney do
   let(:user) { create(:user) }
   let(:recipient) { create(:user) }
   let(:amount) { 100.to_money }
@@ -15,7 +15,7 @@ RSpec.describe TransferMoneyService do
       end
 
       it "transfers the amount" do
-        expect(service.call[:success]).to be_truthy
+        expect(service.call[:success]).to be true
         expect(user.account.reload.balance).to eq(100.to_money)
         expect(recipient.account.reload.balance).to eq(150.to_money)
       end
@@ -26,7 +26,7 @@ RSpec.describe TransferMoneyService do
 
       it "does not transfer the amount" do
         result = service.call
-        expect(result[:success]).to be_falsey
+        expect(result[:success]).to be false
         expect(result[:error]).to eq("Insufficient balance")
         expect(user.account.reload.balance).to eq(50.to_money)
         expect(recipient.account.reload.balance).to eq(0.to_money)
@@ -38,7 +38,7 @@ RSpec.describe TransferMoneyService do
 
       it "returns an error" do
         result = service.call
-        expect(result[:success]).to be_falsey
+        expect(result[:success]).to be false
         expect(result[:error]).to eq("Recipient not found")
       end
     end
@@ -48,7 +48,7 @@ RSpec.describe TransferMoneyService do
 
       it "returns an error" do
         result = service.call
-        expect(result[:success]).to be_falsey
+        expect(result[:success]).to be false
         expect(result[:error]).to eq("Invalid amount")
       end
     end

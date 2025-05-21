@@ -1,6 +1,4 @@
-class WithdrawMoneyService
-  attr_reader :user, :amount, :success
-
+class WithdrawMoney
   def initialize(user:, amount:)
     @user = user
     @amount = amount.to_money
@@ -27,6 +25,8 @@ class WithdrawMoneyService
   end
 
   private
+
+  attr_reader :user, :amount, :success
 
   def success_response(account)
     { success: true, message: "Withdrawal successful", balance: account.balance.amount }

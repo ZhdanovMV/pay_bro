@@ -35,7 +35,7 @@ RSpec.describe SignupUser do
 
       it 'returns an error' do
         result = service.call
-        expect(result[:success]).to be(false)
+        expect(result[:success]).to be false
         expect(result[:error]).to be_present
       end
     end

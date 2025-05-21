@@ -6,7 +6,7 @@ module Api
       end
 
       def deposit
-        result = DepositMoneyService.new(user: current_user, amount: params[:amount]).call
+        result = DepositMoney.new(user: current_user, amount: params[:amount]).call
 
         if result[:success]
           render json: result.slice(:message, :balance)
@@ -16,7 +16,7 @@ module Api
       end
 
       def withdraw
-        result = WithdrawMoneyService.new(user: current_user, amount: params[:amount]).call
+        result = WithdrawMoney.new(user: current_user, amount: params[:amount]).call
 
         if result[:success]
           render json: result.slice(:message, :balance)
@@ -26,7 +26,7 @@ module Api
       end
 
       def transfer
-        result = TransferMoneyService.new(
+        result = TransferMoney.new(
           from_user: current_user,
           recipient_email: params[:recipient_email],
           amount: params[:amount]
