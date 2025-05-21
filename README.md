@@ -22,7 +22,7 @@ The application will be accessible at `http://localhost:3000`.
 
 To run tests, execute:
 ```bash
-bin/rspec
+rspec
 ```
 
 ## Examples of CURL queries
