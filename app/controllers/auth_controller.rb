@@ -2,12 +2,12 @@ class AuthController < ApplicationController
   skip_before_action :authenticate_request, only: [ :signup, :login ]
 
   def signup
-    user = User.new(user_params)
+    result = SignupUser.new(email: user_params["email"], password: user_params["password"]).call
 
-    if user.save
-      render json: { token: encode_jwt({ user_id: user.id }) }, status: :created
+    if result[:success]
+      render json: { token: encode_jwt({ user_id: result[:user].id }) }, status: :created
     else
-      render json: { error: user.errors.full_messages }, status: :unprocessable_entity
+      render json: { error: result[:error] }, status: :unprocessable_entity
     end
   end
 

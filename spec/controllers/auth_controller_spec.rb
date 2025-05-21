@@ -16,6 +16,12 @@ RSpec.describe AuthController, type: :controller do
         }.to change(User, :count).by(1)
       end
 
+      it 'creates a new account' do
+        expect {
+          post :signup, params: valid_params
+        }.to change(Account, :count).by(1)
+      end
+
       it 'returns a success response' do
         post :signup, params: valid_params
         expect(response).to have_http_status(:created)
@@ -40,6 +46,12 @@ RSpec.describe AuthController, type: :controller do
         expect {
           post :signup, params: invalid_params
         }.to_not change(User, :count)
+      end
+
+      it 'does not create a new account' do
+        expect {
+          post :signup, params: invalid_params
+        }.to_not change(Account, :count)
       end
 
       it 'returns an unprocessable entity status' do
