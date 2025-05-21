@@ -6,7 +6,7 @@ module Api
       end
 
       def deposit
-        result = DepositMoney.new(user: current_user, amount: params[:amount]).call
+        result = DepositMoney.new(user: current_user, amount: deposit_params[:amount]).call
 
         if result[:success]
           render json: result.slice(:message, :balance)
@@ -16,7 +16,7 @@ module Api
       end
 
       def withdraw
-        result = WithdrawMoney.new(user: current_user, amount: params[:amount]).call
+        result = WithdrawMoney.new(user: current_user, amount: withdraw_params[:amount]).call
 
         if result[:success]
           render json: result.slice(:message, :balance)
@@ -28,8 +28,8 @@ module Api
       def transfer
         result = TransferMoney.new(
           from_user: current_user,
-          recipient_email: params[:recipient_email],
-          amount: params[:amount]
+          recipient_email: transfer_params[:recipient_email],
+          amount: transfer_params[:amount]
         ).call
 
         if result[:success]
@@ -52,6 +52,18 @@ module Api
         else
           :internal_server_error
         end
+      end
+
+      def deposit_params
+        params.permit(:amount)
+      end
+
+      def withdraw_params
+        params.permit(:amount)
+      end
+
+      def transfer_params
+        params.permit(:amount, :recipient_email)
       end
     end
   end
